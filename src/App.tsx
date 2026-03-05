@@ -4,7 +4,7 @@ function App() {
   return (
     <div className="w-screen h-screen bg-black">
       <KineticTypography
-        text="CREATIVE"
+        text="RARE DESIGN LABS"
         color="#ffffff"
         bgColor="#000000"
       />

@@ -30,19 +30,28 @@ export class KineticType extends THREE.Object3D {
 
   private createTextTexture(renderer?: THREE.WebGLRenderer) {
     const canvas = document.createElement('canvas');
-    canvas.width = 2048;
-    canvas.height = 512;
-    const ctx = canvas.getContext('2d')!;
+    const height = 512;
+    const fontSize = height * 0.75;
+    const font = `bold ${fontSize}px Arial, sans-serif`;
+    const gap = 200; // consistent spacing between text repetitions
 
-    // Fill background
+    // Measure text to determine canvas width
+    canvas.height = height;
+    canvas.width = 1;
+    const ctx = canvas.getContext('2d')!;
+    ctx.font = font;
+    const textWidth = ctx.measureText(this.opts.word).width;
+
+    // Resize canvas to fit text + gap (resizing resets context state)
+    canvas.width = Math.ceil(textWidth + gap);
+
+    // Re-apply context settings after resize
     ctx.fillStyle = this.opts.fill;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    // Draw text filling the full banner
     ctx.fillStyle = this.opts.color;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.font = `bold ${canvas.height * 0.75}px Arial, Helvetica, sans-serif`;
+    ctx.font = font;
     ctx.fillText(this.opts.word, canvas.width / 2, canvas.height / 2);
 
     this.textTexture = new THREE.CanvasTexture(canvas);

@@ -12,7 +12,7 @@ interface KineticTypographyProps {
 }
 
 export function KineticTypography({
-  text = 'KINETIC',
+  text = 'RARE DESIGN LABS',
   color = '#ffffff',
   bgColor = '#000000',
   className,
@@ -23,15 +23,24 @@ export function KineticTypography({
     const container = containerRef.current;
     if (!container) return;
 
-    const gl = new GLManager(container);
-    const options = createTorusKnotOptions(text, color, bgColor);
-    const kineticType = new KineticType(options, gl.renderer);
-    gl.scene.add(kineticType);
+    let gl: GLManager | null = null;
+    let kineticType: KineticType | null = null;
+
+    // Wait for fonts to load before drawing text to canvas
+    document.fonts.ready.then(() => {
+      if (!container.isConnected) return;
+      gl = new GLManager(container);
+      const options = createTorusKnotOptions(text, color, bgColor);
+      kineticType = new KineticType(options, gl.renderer);
+      gl.scene.add(kineticType);
+    });
 
     return () => {
-      kineticType.dispose();
-      gl.scene.remove(kineticType);
-      gl.dispose();
+      if (kineticType && gl) {
+        kineticType.dispose();
+        gl.scene.remove(kineticType);
+        gl.dispose();
+      }
     };
   }, [text, color, bgColor]);
 
