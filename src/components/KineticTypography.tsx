@@ -23,12 +23,13 @@ export function KineticTypography({
     const container = containerRef.current;
     if (!container) return;
 
+    let cancelled = false;
     let gl: GLManager | null = null;
     let kineticType: KineticType | null = null;
 
     // Wait for fonts to load before drawing text to canvas
     document.fonts.ready.then(() => {
-      if (!container.isConnected) return;
+      if (cancelled || !container.isConnected) return;
       gl = new GLManager(container);
       const options = createTorusKnotOptions(text, color, bgColor);
       kineticType = new KineticType(options, gl.renderer);
@@ -36,6 +37,7 @@ export function KineticTypography({
     });
 
     return () => {
+      cancelled = true;
       if (kineticType && gl) {
         kineticType.dispose();
         gl.scene.remove(kineticType);
